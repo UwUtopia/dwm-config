@@ -1,4 +1,5 @@
 /* See LICENSE file for copyright and license details. */
+#include <X11/XF86keysym.h>
 
 /* appearance */
 static const unsigned int borderpx  = 1;        /* border pixel of windows */
@@ -45,7 +46,7 @@ static const Layout layouts[] = {
 };
 
 /* key definitions */
-#define MODKEY Mod1Mask
+#define MODKEY Mod4Mask
 #define TAGKEYS(KEY,TAG) \
 	{ MODKEY,                       KEY,      view,           {.ui = 1 << TAG} }, \
 	{ MODKEY|ControlMask,           KEY,      toggleview,     {.ui = 1 << TAG} }, \
@@ -59,6 +60,13 @@ static const Layout layouts[] = {
 static char dmenumon[2] = "0"; /* component of dmenucmd, manipulated in spawn() */
 static const char *dmenucmd[] = { "dmenu_run", "-m", dmenumon, "-fn", dmenufont, "-nb", col_gray1, "-nf", col_gray3, "-sb", col_cyan, "-sf", col_gray4, NULL };
 static const char *termcmd[]  = { "st", NULL };
+
+/* + Adjusting volume pipewire + brightnessctl */
+static const char *up_vol[]   = { "pactl", "set-sink-volume", "@DEFAULT_SINK@", "+1%",   NULL };
+static const char *down_vol[] = { "pactl", "set-sink-volume", "@DEFAULT_SINK@", "-1%",   NULL };
+static const char *mute_vol[] = { "pactl", "set-sink-mute",   "@DEFAULT_SINK@", "toggle", NULL };
+static const char *brighter[] = { "brightnessctl", "set", "1%+", NULL };
+static const char *dimmer[]   = { "brightnessctl", "set", "1%-", NULL };
 
 static const Key keys[] = {
 	/* modifier                     key        function        argument */
@@ -95,6 +103,12 @@ static const Key keys[] = {
 	TAGKEYS(                        XK_8,                      7)
 	TAGKEYS(                        XK_9,                      8)
 	{ MODKEY|ShiftMask,             XK_q,      quit,           {0} },
+/* + Adjusting volume pipewire + brightnessctl */
+       { 0, XF86XK_AudioMute,        spawn, {.v = mute_vol } },
+       { 0, XF86XK_AudioLowerVolume, spawn, {.v = down_vol } },
+       { 0, XF86XK_AudioRaiseVolume, spawn, {.v = up_vol } },
+       { 0, XF86XK_MonBrightnessDown, spawn, {.v = dimmer } },
+       { 0, XF86XK_MonBrightnessUp,   spawn, {.v = brighter } },
 };
 
 /* button definitions */
